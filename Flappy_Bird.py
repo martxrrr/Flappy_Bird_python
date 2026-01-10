@@ -1,5 +1,6 @@
 import pygame
 pygame.init()
+
 import random
 
 WIDTH, HEIGHT = 900, 600
@@ -14,21 +15,20 @@ PIPES_START_POS = 950
 
 SCREEN = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("Flappy Bird")
-pygame.display.set_icon(pygame.image.load("PYTHON/Learning/Games/flappy/bird1.png").convert_alpha())
+pygame.display.set_icon(pygame.image.load("flappy/bird1.png").convert_alpha())
 
-BG = pygame.transform.scale(pygame.image.load("PYTHON/Learning/Games/flappy/bg.png"), (WIDTH, HEIGHT))
-GROUND = pygame.image.load("PYTHON/Learning/Games/flappy/ground.png").convert_alpha()
-PIPEDOWN = pygame.image.load("PYTHON/Learning/Games/flappy/pipedown.png").convert_alpha()
+BG = pygame.transform.scale(pygame.image.load("flappy/bg.png"), (WIDTH, HEIGHT))
+GROUND = pygame.image.load("flappy/ground.png").convert_alpha()
+PIPEDOWN = pygame.image.load("flappy/pipedown.png").convert_alpha()
 PIPEUP = pygame.transform.rotate(PIPEDOWN, 180)
 
-
-class Obstacles:
+class Obstacles():
     def __init__(self):
         #Bottom pipe
         self.x1 = PIPES_START_POS
         self.y1 = random.randint(173, 514)
 
-        #Top pipe
+        #Top pipe       
         self.y2 = (self.y1 - PIPE_SPACE) - PIPEDOWN.get_height() 
         self.x2 = PIPES_START_POS
 
@@ -65,10 +65,10 @@ class Bird():
         self.vel = 0
         self.jump_count = 10
 
-    #This one too, I'm just getting started with pygame so it was kinda hard   
+     
     def draw(self, screen):
         for x in range(3):
-            self.bird_images.append(pygame.image.load(f"PYTHON/Learning/Games/flappy/bird{x+1}.png").convert_alpha())
+            self.bird_images.append(pygame.image.load(f"flappy/bird{x+1}.png").convert_alpha())
 
         self.bird_count += self.animation_speed
         curr_bird = self.bird_images[int(self.bird_count)]

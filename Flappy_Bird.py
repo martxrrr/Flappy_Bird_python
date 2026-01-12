@@ -14,46 +14,73 @@ PIPES_START_POS = 950
 
 
 SCREEN = pygame.display.set_mode((WIDTH, HEIGHT))
-pygame.display.set_caption("Flappy Bird")
-pygame.display.set_icon(pygame.image.load("flappy/bird1.png").convert_alpha())
+pygame.display.set_caption("PYTHON/Learning/Games/flappy_folder/Flappy Bird")
+pygame.display.set_icon(pygame.image.load("PYTHON/Learning/Games/flappy_folder/flappy/bird1.png").convert_alpha())
 
-BG = pygame.transform.scale(pygame.image.load("flappy/bg.png"), (WIDTH, HEIGHT))
-GROUND = pygame.image.load("flappy/ground.png").convert_alpha()
-PIPEDOWN = pygame.image.load("flappy/pipedown.png").convert_alpha()
+BG = pygame.transform.scale(pygame.image.load("PYTHON/Learning/Games/flappy_folder/flappy/bg.png"), (WIDTH, HEIGHT))
+GROUND = pygame.image.load("PYTHON/Learning/Games/flappy_folder/flappy/ground.png").convert_alpha()
+PIPEDOWN = pygame.image.load("PYTHON/Learning/Games/flappy_folder/flappy/pipedown.png").convert_alpha()#bottom pipe
 PIPEUP = pygame.transform.rotate(PIPEDOWN, 180)
 
+SPAWN_EVENT = pygame.event.custom_type()
+pygame.time.set_timer(SPAWN_EVENT, 2500)
+
+#pygame.Rect() - it's like a container for an image
+
 class Obstacles():
+    obstacle_list = []
     def __init__(self):
         #Bottom pipe
-        self.x1 = PIPES_START_POS
-        self.y1 = random.randint(173, 514)
+        self.pipedown_x = PIPES_START_POS
+        self.pipedown_y = random.randint(173, 514)
+        self.pipedown_width = PIPEDOWN.get_width()
+        self.pipedown_height = PIPEDOWN.get_height()
 
         #Top pipe       
-        self.y2 = (self.y1 - PIPE_SPACE) - PIPEDOWN.get_height() 
-        self.x2 = PIPES_START_POS
+        self.pipeup_y = (self.pipedown_y - PIPE_SPACE) - PIPEDOWN.get_height() 
+        self.pipeup_x = PIPES_START_POS
+        self.pipeup_width = PIPEUP.get_width()
+        self.pipeup_height = PIPEUP.get_height()
 
-    def draw(self, screen):
-        screen.blit(PIPEUP, (self.x2, self.y2))
-        screen.blit(PIPEDOWN, (self.x1, self.y1))
+        self.pipeup_rect = pygame.Rect(self.pipeup_x, self.pipeup_y, self.pipeup_width, self.pipeup_height)
+        self.pipedown_rect = pygame.Rect(self.pipedown_x, self.pipedown_y, self.pipedown_width, self.pipedown_height)
 
-    def move(self, vel):
-        self.x1 -= vel
-        self.x2 -= vel
 
-        if self.x1 < -70:
-            self.x1 = 950
+    def draw(self, screen): #obstacle list has the rect of the image
+        screen.blit(PIPEUP, (self.pipeup_rect.x , self.pipeup_rect.y ))
+        screen.blit(PIPEDOWN, (self.pipedown_rect.x, self.pipedown_rect.y))
+
+    def move(self,vel):
+        for pipedown_rect in self.obstacle_list:
+            pipedown_rect.x -= vel      #pipedown_rect.x
+            # self.pipeup_rect.x -= vel   #pipeup_rect.x
+
+        if self.pipedown_rect.x < -70:
+            self.pipedown_rect.x = 950
             self.spawn()
 
-        if self.x2 < -70:
-            self.x2 = 950
+        if self.pipeup_rect.x < -70:
+            self.pipeup_rect.x = 950
             self.spawn()
 
     def spawn(self):
-        self.y1 = random.randint(123, 514)
-        self.y2 = (self.y1 - PIPE_SPACE) - PIPEDOWN.get_height()
+        self.pipedown_rect.y  = random.randint(123, 514)
+        self.pipeup_rect.y = (self.pipedown_rect.y - PIPE_SPACE) - PIPEDOWN.get_height()
+
+    def movement(self, vel):
+        for _ in range(3):
+            self.obstacle_list.append(self.pipedown_rect)
+            self.move(vel)
+
+            if self.pipedown_rect.x < -70:
+                self.obstacle_list.remove(self.pipedown_rect)
+
+    def event_manager(self, event, vel):
+        if event.type == SPAWN_EVENT:
+            self.movement(vel)
 
 
-
+        
 class Bird():
     bird_images = []
     bird_count = 0 
@@ -68,7 +95,7 @@ class Bird():
      
     def draw(self, screen):
         for x in range(3):
-            self.bird_images.append(pygame.image.load(f"flappy/bird{x+1}.png").convert_alpha())
+            self.bird_images.append(pygame.image.load(f"PYTHON/Learning/Games/flappy_folder/flappy/bird{x+1}.png").convert_alpha())
 
         self.bird_count += self.animation_speed
         curr_bird = self.bird_images[int(self.bird_count)]
@@ -104,6 +131,8 @@ def main():
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
+
+            obstacle.event_manager(event, OBST_VEL)
         
         keys = pygame.key.get_pressed()
 
@@ -112,7 +141,7 @@ def main():
         bird.move(keys)
 
         obstacle.draw(SCREEN)
-        obstacle.move(OBST_VEL)
+        obstacle.movement(OBST_VEL)
         pygame.display.update()
         clock.tick(FPS)
 

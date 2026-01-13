@@ -29,6 +29,7 @@ pygame.time.set_timer(SPAWN_EVENT, 2500)
 
 class Obstacles():
     obstacle_list = []
+    obstacle_count = 3
     def __init__(self):
         #Bottom pipe
         self.pipedown_x = PIPES_START_POS
@@ -46,39 +47,37 @@ class Obstacles():
         self.pipedown_rect = pygame.Rect(self.pipedown_x, self.pipedown_y, self.pipedown_width, self.pipedown_height)
 
 
-    def draw(self, screen): #obstacle list has the rect of the image
-        screen.blit(PIPEUP, (self.pipeup_rect.x , self.pipeup_rect.y ))
-        screen.blit(PIPEDOWN, (self.pipedown_rect.x, self.pipedown_rect.y))
-
-    def move(self,vel):
-        for pipedown_rect in self.obstacle_list:
-            pipedown_rect.x -= vel      #pipedown_rect.x
-            # self.pipeup_rect.x -= vel   #pipeup_rect.x
-
-        if self.pipedown_rect.x < -70:
-            self.pipedown_rect.x = 950
-            self.spawn()
-
-        if self.pipeup_rect.x < -70:
-            self.pipeup_rect.x = 950
-            self.spawn()
-
     def spawn(self):
         self.pipedown_rect.y  = random.randint(123, 514)
         self.pipeup_rect.y = (self.pipedown_rect.y - PIPE_SPACE) - PIPEDOWN.get_height()
 
     def movement(self, vel):
-        for _ in range(3):
+        for _ in range(self.obstacle_count):
             self.obstacle_list.append(self.pipedown_rect)
-            self.move(vel)
+        
+        if len(self.obstacle_list) >= 3:
+            self.obstacle_count = 3
+            
+        for obstacle in self.obstacle_list:
+            obstacle.x -= vel
+            if obstacle.x < -70:
+                self.obstacle_list.remove(obstacle)
 
-            if self.pipedown_rect.x < -70:
-                self.obstacle_list.remove(self.pipedown_rect)
+        print(len(self.obstacle_list))
 
-    def event_manager(self, event, vel):
+    def draw(self, screen): #obstacle list has the rect of the image
+        obstacle_pos = 0
+        obstacle_speed = 0.1
+            # screen.blit(PIPEUP, (self.pipeup_rect.x , self.pipeup_rect.y ))
+        obstacle_pos += obstacle_speed
+        screen.blit(PIPEDOWN, (self.obstacle_list[int(obstacle_pos)].x, self.obstacle_list[int(obstacle_pos)].y))
+
+        if obstacle_pos > len(self.obstacle_list):
+            obstacle_pos = 0
+
+    def event_manager(self, event, vel, screen):
         if event.type == SPAWN_EVENT:
-            self.movement(vel)
-
+            pass
 
         
 class Bird():
@@ -132,7 +131,7 @@ def main():
             if event.type == pygame.QUIT:
                 running = False
 
-            obstacle.event_manager(event, OBST_VEL)
+            # obstacle.event_manager(event, OBST_VEL, SCREEN)
         
         keys = pygame.key.get_pressed()
 

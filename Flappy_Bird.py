@@ -25,7 +25,7 @@ PIPEUP = pygame.transform.rotate(PIPEDOWN, 180)
 SPAWN_EVENT = pygame.event.custom_type()
 pygame.time.set_timer(SPAWN_EVENT, 2500)
 
-#pygame.Rect() - it's like a container for an image
+#pygame.Rect(x, y, w, h) - it's like a container for an image
 
 class Obstacles():
     obstacle_list = []
@@ -54,23 +54,24 @@ class Obstacles():
     def movement(self, vel):
         for _ in range(self.obstacle_count):
             self.obstacle_list.append(self.pipedown_rect)
-        
-        if len(self.obstacle_list) >= 3:
-            self.obstacle_count = 3
-            
+
         for obstacle in self.obstacle_list:
             obstacle.x -= vel
             if obstacle.x < -70:
                 self.obstacle_list.remove(obstacle)
+        
+        if len(self.obstacle_list) >= 3:
+            self.obstacle_count = 3
 
+        print(self.obstacle_list)
         print(len(self.obstacle_list))
 
     def draw(self, screen): #obstacle list has the rect of the image
+        screen.blit(PIPEUP, (self.pipeup_rect.x , self.pipeup_rect.y ))
         obstacle_pos = 0
-        obstacle_speed = 0.1
-            # screen.blit(PIPEUP, (self.pipeup_rect.x , self.pipeup_rect.y ))
+        obstacle_speed = 0.01
         obstacle_pos += obstacle_speed
-        screen.blit(PIPEDOWN, (self.obstacle_list[int(obstacle_pos)].x, self.obstacle_list[int(obstacle_pos)].y))
+        # screen.blit(PIPEDOWN, (self.obstacle_list[int(obstacle_pos)].x, self.obstacle_list[int(obstacle_pos)].y))
 
         if obstacle_pos > len(self.obstacle_list):
             obstacle_pos = 0
@@ -139,8 +140,8 @@ def main():
         bird.draw(SCREEN)
         bird.move(keys)
 
-        obstacle.draw(SCREEN)
         obstacle.movement(OBST_VEL)
+        obstacle.draw(SCREEN)
         pygame.display.update()
         clock.tick(FPS)
 

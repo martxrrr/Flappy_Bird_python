@@ -92,9 +92,7 @@ def main():
             if event.type == pygame.QUIT:
                  running = False  
 
-            if event.type == pygame.MOUSEBUTTONDOWN:
-                x, y = pygame.mouse.get_pos()
-                print(x, y)
+
 
         keys = pygame.key.get_pressed()
 

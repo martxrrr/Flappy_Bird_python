@@ -1,4 +1,5 @@
 import pygame
+import random
 
 WIDTH, HEIGHT = 900, 600
 FPS = 60
@@ -10,11 +11,41 @@ BIRD_WIDTH = BIRD.get_height()
 BIRD_HEIGHT = BIRD.get_width()
 BIRD_X, BIRD_Y = 100, 300
 BIRD_VEL = 8
+PIPE_VEL = 8
+PIPE_POS_X = 960
+PIPE_GAP = 100
 
 BG = pygame.transform.scale(pygame.image.load("PYTHON/Learning/Games/flappy_folder/flappy/bg.png"), (WIDTH, HEIGHT))
 GROUND = pygame.image.load("PYTHON/Learning/Games/flappy_folder/flappy/ground.png")
 PIPEDOWN = pygame.image.load("PYTHON/Learning/Games/flappy_folder/flappy/pipedown.png")
 PIPEUP = pygame.transform.rotate(pygame.image.load("PYTHON/Learning/Games/flappy_folder/flappy/pipedown.png"), 180)
+
+class Pipes:
+    def __init__(self):
+        #pipedown
+        self.down_x = PIPE_POS_X
+        self.down_y = random.randint(145, 465)
+
+        #pipeup
+        self.up_x = PIPE_POS_X
+        self.up_y = self.down_y - PIPE_GAP
+
+    def pipe_draw(self, screen):
+        #pipedown
+        screen.blit(PIPEDOWN, (self.down_x, self.down_y))
+        screen.blit(PIPEUP, (self.up_x, self.up_y))
+
+    def spawn(self):
+        if self.down_x <= -60 or self.up_x <= -60: 
+            self.down_x = PIPE_POS_X
+            self.up_x = PIPE_POS_X
+            self.down_y = random.randint(145, 465)
+            self.up_y = self.down_y + PIPE_GAP        
+
+    def move_pipe(self):
+        self.down_x -= PIPE_VEL
+        self.up_x -= PIPE_VEL
+        self.spawn()
 
 class Bird:
     def __init__(self, x, y):
@@ -52,6 +83,7 @@ def main():
     running = True
     clock = pygame.time.Clock()
     bird = Bird(BIRD_X, BIRD_Y)
+    obstacle = Pipes()
 
     while running:
         clock.tick(FPS)
@@ -60,11 +92,18 @@ def main():
             if event.type == pygame.QUIT:
                  running = False  
 
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                x, y = pygame.mouse.get_pos()
+                print(x, y)
+
         keys = pygame.key.get_pressed()
 
         draw_window(SCREEN)
         bird.draw_bird(SCREEN)
         bird.move(keys)
+
+        obstacle.pipe_draw(SCREEN)
+        obstacle.move_pipe()
 
         pygame.display.update()
     pygame.quit()

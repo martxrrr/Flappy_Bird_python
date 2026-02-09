@@ -13,7 +13,7 @@ BIRD_X, BIRD_Y = 100, 300
 BIRD_VEL = 8
 PIPE_VEL = 8
 PIPE_POS_X = 960
-PIPE_GAP = 100
+PIPE_GAP = 70
 
 BG = pygame.transform.scale(pygame.image.load("PYTHON/Learning/Games/flappy_folder/flappy/bg.png"), (WIDTH, HEIGHT))
 GROUND = pygame.image.load("PYTHON/Learning/Games/flappy_folder/flappy/ground.png")
@@ -28,7 +28,7 @@ class Pipes:
 
         #pipeup
         self.up_x = PIPE_POS_X
-        self.up_y = self.down_y - PIPE_GAP
+        self.up_y = (self.down_y - PIPEUP.get_height()) - PIPE_GAP
 
     def pipe_draw(self, screen):
         #pipedown
@@ -40,7 +40,7 @@ class Pipes:
             self.down_x = PIPE_POS_X
             self.up_x = PIPE_POS_X
             self.down_y = random.randint(145, 465)
-            self.up_y = self.down_y + PIPE_GAP        
+            self.up_y = (self.down_y - PIPEUP.get_height()) - PIPE_GAP       
 
     def move_pipe(self):
         self.down_x -= PIPE_VEL

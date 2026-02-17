@@ -10,15 +10,20 @@ BIRD = pygame.image.load("PYTHON/Learning/Games/flappy_folder/flappy/bird1.png")
 BIRD_WIDTH = BIRD.get_height()
 BIRD_HEIGHT = BIRD.get_width()
 BIRD_X, BIRD_Y = 100, 300
-BIRD_VEL = 8
+BIRD_VEL = 6
 PIPE_VEL = 8
 PIPE_POS_X = 960
 PIPE_GAP = 70
 
 BG = pygame.transform.scale(pygame.image.load("PYTHON/Learning/Games/flappy_folder/flappy/bg.png"), (WIDTH, HEIGHT))
 GROUND = pygame.image.load("PYTHON/Learning/Games/flappy_folder/flappy/ground.png")
+
 PIPEDOWN = pygame.image.load("PYTHON/Learning/Games/flappy_folder/flappy/pipedown.png")
+PIPEDOWN_MASK = pygame.mask.from_surface(PIPEDOWN)
+
 PIPEUP = pygame.transform.rotate(pygame.image.load("PYTHON/Learning/Games/flappy_folder/flappy/pipedown.png"), 180)
+PIPEUP_MASK = pygame.mask.from_surface(PIPEUP)
+
 
 class Pipes:
     def __init__(self):
@@ -54,11 +59,12 @@ class Bird:
         self.bird_list = []
         self.bird_count = 0
         self.animation_speed = 0.1
-        self.jump_count = 17
+        self.jump_count = 10
 
     def draw_bird(self, screen):
         for x in range(LIST_LEN):
-            self.bird_list.append(pygame.image.load(f"PYTHON/Learning/Games/flappy_folder/flappy/bird{x + 1}.png"))
+            bird = pygame.image.load(f"PYTHON/Learning/Games/flappy_folder/flappy/bird{x + 1}.png")
+            self.bird_list.append(bird)
 
         self.bird_count += self.animation_speed
         if self.bird_count > LIST_LEN: self.bird_count = 0
